@@ -1,6 +1,7 @@
-export interface Member {
-  id: string;
-  name: string;
+import type { GroupMember } from "@/generated/prisma";
+
+export interface Member extends Omit<GroupMember, "createdAt" | "updatedAt" | "groupId"> {
+  groupId?: string;
 }
 
 export interface GroupFormData {

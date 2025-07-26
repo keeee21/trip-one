@@ -1,7 +1,7 @@
 "use server";
 
+import { type CreateGroupInput, createGroupSchema } from "@/features/group/validators/group";
 import { PrismaClient } from "@/generated/prisma";
-import { type CreateGroupInput, createGroupSchema } from "@/validators/group";
 
 const prisma = new PrismaClient();
 

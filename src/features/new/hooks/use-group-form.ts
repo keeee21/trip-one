@@ -2,8 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
+import { createGroupSchema } from "@/features/group/validators/group";
 import { createGroup as createGroupAction } from "@/features/new/actions/group";
-import { createGroupSchema } from "@/validators/group";
 import type { Member } from "../types";
 
 export const useGroupForm = () => {
