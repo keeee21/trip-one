@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -19,4 +13,93 @@ model Group {
   name      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  // リレーション
+  groupMembers GroupMember[]
+  payments Payment[]
+  settlements Settlement[]
+
+  @@map("groups")
+}
+
+model GroupMember {
+  id        String   @id @default(uuid())
+  groupId   String
+  name      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  group   Group    @relation(fields: [groupId], references: [id])
+  paymentBys PaymentBy[]
+  paymentFor PaymentFor[]
+  settlementsFrom Settlement[] @relation("fromGroupMember")
+  settlementsTo   Settlement[] @relation("toGroupMember")
+
+  @@map("group_members")
+}
+
+// 立替え
+model Payment {
+  id        String   @id @default(uuid())
+  groupId   String
+  title     String
+  amount    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  group Group @relation(fields: [groupId], references: [id])
+  paymentBy PaymentBy[]
+  paymentFor PaymentFor[]
+
+  @@map("payments")
+}
+
+// 立替えた人
+model PaymentBy {
+  id        String   @id @default(uuid())
+  paymentId String
+  groupMemberId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  payment Payment @relation(fields: [paymentId], references: [id])
+  groupMember GroupMember @relation(fields: [groupMemberId], references: [id])
+
+  @@map("payment_bys")
+}
+
+// 立替えられた人
+model PaymentFor {
+  id        String   @id @default(uuid())
+  paymentId String
+  groupMemberId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  payment Payment @relation(fields: [paymentId], references: [id])
+  groupMember GroupMember @relation(fields: [groupMemberId], references: [id])
+
+  @@map("payment_fors")
+}
+
+// 精算
+model Settlement {
+  id        String   @id @default(uuid())
+  groupId String
+  fromGroupMemberId String
+  toGroupMemberId String
+  amount Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // リレーション
+  group Group @relation(fields: [groupId], references: [id])
+  fromGroupMember GroupMember @relation(fields: [fromGroupMemberId], references: [id], name: "fromGroupMember")
+  toGroupMember   GroupMember @relation(fields: [toGroupMemberId], references: [id], name: "toGroupMember")
+
+  @@map("settlements")
 }
