@@ -1,4 +1,5 @@
-import type { GroupData } from "@/features/group/types";
+import { fetchGroupData } from "@/features/group/actions/fetch-group-data";
+import { fetchPaymentList } from "@/features/payment/actions/fetch-payment-list";
 import GroupPresenter from "./presenter";
 
 interface GroupContainerProps {
@@ -6,19 +7,14 @@ interface GroupContainerProps {
 }
 
 export default async function GroupContainer({ groupId }: GroupContainerProps) {
-  // サーバーサイドでのデータフェッチ
-  const groupData = await fetchGroupData(groupId);
+  const group = await fetchGroupData(groupId);
 
-  return <GroupPresenter groupData={groupData} />;
-}
+  if (!group) {
+    return <div>グループが見つかりません</div>;
+  }
 
-// Mock API function - 実際の実装では外部APIを呼び出す
-async function fetchGroupData(groupId: string): Promise<GroupData> {
-  // Simulate API call delay
-  await new Promise((resolve) => setTimeout(resolve, 100));
+  // 立替え記録を取得
+  const paymentList = await fetchPaymentList(groupId);
 
-  return {
-    groupId,
-    groupName: "北海道旅行",
-  };
+  return <GroupPresenter group={group} paymentList={paymentList} />;
 }

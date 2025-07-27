@@ -1,10 +1,14 @@
 "use server";
 
-import { PrismaClient } from "@/generated/prisma";
+import { Group, GroupMember, PrismaClient } from "@/generated/prisma";
 
 const prisma = new PrismaClient();
 
-export async function fetchGroupData(groupId: string) {
+type GroupWithMembers = Group & {
+  groupMembers: GroupMember[];
+};
+
+export async function fetchGroupData(groupId: string): Promise<GroupWithMembers | null> {
   return prisma.group.findUnique({
     where: { id: groupId },
     include: {

@@ -50,7 +50,7 @@ model Payment {
 
   // リレーション
   group Group @relation(fields: [groupId], references: [id])
-  paymentBy PaymentBy[]
+  paymentBy PaymentBy @relation(fields: [id], references: [paymentId])
   paymentFor PaymentFor[]
 
   @@map("payments")
@@ -59,13 +59,13 @@ model Payment {
 // 立替えた人
 model PaymentBy {
   id        String   @id @default(uuid())
-  paymentId String
+  paymentId String @unique
   groupMemberId String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   // リレーション
-  payment Payment @relation(fields: [paymentId], references: [id])
+  payment     Payment?
   groupMember GroupMember @relation(fields: [groupMemberId], references: [id])
 
   @@map("payment_bys")
